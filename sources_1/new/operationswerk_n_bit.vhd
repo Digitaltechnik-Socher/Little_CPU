@@ -194,7 +194,7 @@ begin
     port map (
         Q   => addr_reg_s,
         D0  => SYSBUS,
-        D1  => reg_stack_q_s,
+        D1  => pc_q_s,
         SEL => INSTRUCT(5)
     );
  ---------------------------
