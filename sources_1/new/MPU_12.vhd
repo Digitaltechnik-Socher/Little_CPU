@@ -83,6 +83,21 @@ architecture rtl of MPU_12 is
             CLK  : in STD_LOGIC
         );
     end component;
+
+     ---------------------------   
+
+    component clk_mod is
+        port (
+            CLK   : in std_logic;
+            CLR   : in std_logic;
+            --clk/2
+            CLK_1 : out std_logic;
+            --clk/2 + 1/4 clk
+            ClK_2 : out std_logic;
+            --clk/2
+            CLk_3 : out std_logic
+        );
+    end component;
 ------------------Signal-Declaration---------------------------------------------
     signal instruction_s : STD_LOGIC_VECTOR (16 downto 0);
     signal opc_s         : STD_LOGIC_VECTOR (4 downto 0);
@@ -93,15 +108,31 @@ architecture rtl of MPU_12 is
     signal st_c1_s       : STD_LOGIC; --Statusflag
     signal st_s1_s       : STD_LOGIC; --Statusflag
     signal st_z1_s       : STD_LOGIC; --Statusflag
+    
+    signal clk_op  : std_logic := '0';
+    signal clk_cu  : std_logic := '0';
+    signal clk_ram : std_logic := '0';
 begin
 ------------------SIGNAL Assignemnt----------------------------------------------
     gnd_s <= "00000";
 ------------------Component-Instansiation----------------------------------------
+
+    clk_inst : clk_mod
+    port map (
+        CLK   => CLK,
+        CLR   => CLR,
+        --clk/2
+        CLK_1 => clk_op,
+        --clk/2 + 1/4 clk
+        ClK_2 => clk_ram,
+        --clk/2
+        CLk_3 => clk_cu
+    );
     CU_a : Controlunit
     port map (
         OPC      => opc_s,
         INSTRUCT => instruction_s,
-        CLK      => CLK,
+        CLK      => clk_cu,
         CLR      => CLR,
         IPV      => IPV,
         OPREC    => OPREC,
@@ -123,7 +154,7 @@ begin
         IR_Q               => opc_s, -- instruction output
         OPR_Q              => PORT_OUT, -- output register
         INSTRUCT           => instruction_s, -- Control instructions
-        CLK                => CLK,
+        CLK                => clk_op,
         CLR                => CLR,
         OP_C               => st_c1_s,
         OP_S               => st_s1_s,
@@ -137,7 +168,7 @@ begin
         DO   => data_out_s,
         LOAD => LOAD,
         WE   => instruction_s(13),
-        CLK  => CLK
+        CLK  => clk_ram
     );
 
 

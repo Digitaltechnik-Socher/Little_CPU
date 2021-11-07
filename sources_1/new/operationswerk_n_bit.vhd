@@ -132,6 +132,8 @@ architecture rtl of operationswerk_n_bit is
         );
     end component;
 
+
+
     ----------------------------------------------------
     --Signal declaration declaration
     ----------------------------------------------------
@@ -148,6 +150,7 @@ architecture rtl of operationswerk_n_bit is
 
 
 begin
+    
 
     pc : program_counter
     generic map (
@@ -164,8 +167,8 @@ begin
     reg_stack : register_12bit 
     port map (
         D      => pc_q_s,
-        SEL(0) => '0',
-        SEL(1) => INSTRUCT(4),
+        SEL(1) => '0',
+        SEL(0) => INSTRUCT(4),
         Q      => reg_stack_q_s,
         CLK    => CLK,
         CLR    => CLR,
@@ -230,7 +233,7 @@ begin
     --------------------------------------
     -- invert signal for tri-state buffer
     --------------------------------------
-    ena_tb_n_s <= ena_tb_s;
+    ena_tb_n_s <= not ena_tb_s;
  ---------------------------
     mux_4_b : mux_4_1_12bit
     port map (
